@@ -10,7 +10,7 @@ inputs:
   yarn-run:
     default: install
     type: string
-    description: 'Multi-line yarn jobs (i.e., a "yarn run install" command will be only "install"')
+    description: 'Multi-line yarn jobs (i.e., a "yarn run install" command will be only "install")"
 
 runs:
   using: 'composite'
