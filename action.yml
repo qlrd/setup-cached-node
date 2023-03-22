@@ -7,7 +7,7 @@ inputs:
     type: string
     description: 'Node.js version to be used'
 
-  yarn:
+  yarn-run:
     default: '["install"]'
     type: string
     description: 'The yarn command(s) to be executed as one-line JSON array'
