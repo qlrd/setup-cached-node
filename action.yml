@@ -7,10 +7,10 @@ inputs:
     type: string
     description: 'Node.js version to be used'
 
-  yarn-run:
-    default: '["install"]'
+  run:
+    default: yarn run install 
     type: string
-    description: 'The yarn command(s) to be executed as one-line JSON array'
+    description: 'The command(s) to be executed'
 
 runs:
   using: 'composite'
@@ -31,18 +31,12 @@ runs:
     - name: Install dependencies (Linux)
       if: ${{ runner.os == 'Linux' && steps.cache-restore-deps.outputs.cache-hit != 'true' }}
       shell: bash
-      run: >
-        for [ $run in ${{ fromJSON(inputs.yarn-run) }} ]; do
-          yarn run $run
-        done;
+      run: ${{ inputs.run }}
           
     - name: Install dependencies (Windows)
       if: ${{ runner.os == 'Windows' && steps.cache-restore-deps.outputs.cache-hit != 'true' }}
       shell: pwsh
-      run: >
-        foreach($run in ${{ fromJSON(inputs.yarn-run) }}) {
-          yarn run $run
-        }
+      run: ${{ inputs.run }}
 
     - name: Save cache dependencies
       if: ${{ steps.cache-restore-deps.outputs.cache-hit != 'true' }}
