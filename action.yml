@@ -1,0 +1,46 @@
+name: Setup cached Node.js
+description: 'Create a cached node.js environment'
+
+inputs:
+  node-version:
+    default: '18.15.0'
+    type: string
+    description: 'Node.js version to be used'
+
+  yarn-run:
+    default: install
+    type: string
+    description: 'Multi-line yarn jobs (i.e., a "yarn run install" command will be only "install"')
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Restore cached dependencies
+      id: cache-restore-deps
+      uses: actions/cache/restore@v3
+      with:
+        path: ${{ github.workspace }}/node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
+    - name: Install dependencies (Linux)
+      if: ${{ runner.os == 'Linux' && steps.cache-restore-deps.outputs.cache-hit != 'true' }}
+      shell: bash
+      run: for [ $option in ${{ inputs.yarn-run }}]; do yarn run $option; done
+          
+    - name: Install dependencies (Windows)
+      if: ${{ runner.os == 'Windows' && steps.cache-restore-deps.outputs.cache-hit != 'true' }}
+      shell: pwsh
+      run: foreach($option in $list) { yarn run $option }
+
+    - name: Save cache dependencies
+      if: ${{ steps.cache-restore-deps.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
