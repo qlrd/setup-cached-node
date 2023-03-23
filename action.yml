@@ -1,5 +1,5 @@
 name: Setup cached Node.js
-description: 'Create a cached node.js environment'
+description: 'Create a cached dependencies for node.js environment'
 
 inputs:
   node-version:
@@ -11,6 +11,11 @@ inputs:
     default: yarn install 
     type: string
     description: 'The command(s) to be executed'
+
+  key:
+    required: true
+    type: string
+    description: 'The key for cached-deps'
 
 runs:
   using: 'composite'
@@ -26,7 +31,7 @@ runs:
       uses: actions/cache/restore@v3
       with:
         path: ${{ github.workspace }}/node_modules
-        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        key: ${{ inputs.key }}
 
     - name: Install dependencies (Linux)
       if: ${{ runner.os == 'Linux' && steps.cache-restore-deps.outputs.cache-hit != 'true' }}
@@ -43,4 +48,4 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: ${{ github.workspace }}/node_modules
-        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        key: ${{ inputs.key }}
