@@ -12,10 +12,15 @@ inputs:
     type: string
     description: 'The command(s) to be executed'
 
-  key:
+  cache-path:
     required: true
     type: string
-    description: 'The key for cached-deps'
+    description: 'The paths for cached dependencies'
+
+  cache-key:
+    required: true
+    type: string
+    description: 'The key for cached dependencies'
 
 runs:
   using: 'composite'
@@ -30,8 +35,8 @@ runs:
       id: cache-restore-deps
       uses: actions/cache/restore@v3
       with:
-        path: ${{ github.workspace }}/node_modules
-        key: ${{ inputs.key }}
+        path: ${{ inputs.cache-path }}
+        key: ${{ inputs.cache-key }}
 
     - name: Install dependencies (Linux)
       if: ${{ runner.os == 'Linux' && steps.cache-restore-deps.outputs.cache-hit != 'true' }}
@@ -47,5 +52,5 @@ runs:
       if: ${{ steps.cache-restore-deps.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v3
       with:
-        path: ${{ github.workspace }}/node_modules
-        key: ${{ inputs.key }}
+        path: ${{ inputs.cache-path }}
+        key: ${{ inputs.cache-key }}
